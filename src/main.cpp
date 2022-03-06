@@ -2,61 +2,87 @@
 
 #include <stdlib.h>
 
-#include "ContenedorStruct.h"
-#include "HelperFunctions.h"
+const int
+    // Pin en el que se ubica la bomba de agua
+    BOMBA_DE_AGUA = 11,
+    MOTOR_BANDA = 12,
 
-/**
- * @brief Aquí se declara un arreglo de 3 contenedores,
- * los cuales representan las botellas que se utilizaran.
- * La estructura del contenedor es la siguiente:
- * {capacidad del contenedor, tiempo que tarda en llenarse el contenedor} 
- */
-struct contenedor botellas[3] = {
-    {500, 5000},
-    {750, 7500},
-    {1000, 10000}
-};
+    // Cantidad de sensores que activa cada tamaño de botella
+    CHICO = 1,
+    MEDIANO = 2,
+    GRANDE = 3,
+
+    // tiempo que tarda cada tamaño de botella en llenarse
+    TIEMPO_LLENADO_CHICO = 5000,
+    TIEMPO_LLENADO_MEDIANO = 7500,
+    TIEMPO_LLENADO_GRANDE = 10000,
+
+    // Pin en el que se ubica cada sensor
+    SENSOR_ABAJO = A0,
+    SENSOR_EN_MEDIO = A1,
+    SENSOR_ARRIBA = A2,
+    SENSOR_ARRANQUE = 7;
+
+void llenarBotella(int), 
+      moverBanda();
+bool sensorSeActivo(int);
 
 void setup()
 {
   Serial.begin(9600);
+
+  pinMode(BOMBA_DE_AGUA, OUTPUT);
+  pinMode(MOTOR_BANDA, OUTPUT);
+  pinMode(SENSOR_ABAJO, INPUT);
+  pinMode(SENSOR_EN_MEDIO, INPUT);
+  pinMode(SENSOR_ARRIBA, INPUT);
+  pinMode(SENSOR_ARRANQUE, INPUT);
 }
 
 void loop()
 {
-  // Se utiliza un generador aleatorio de números para simular una lectura en el sensor, esto debe ser remplazado por la verdadera lectura y calculo del volumen del contenedor
-  float volumen_botella = (rand() % 10 + 1) * 100.0; 
-
-  struct contenedor botella_seleccionada; //Se define un contenedor vacío
-  
-  //Se define una variable de control, para identificar si la botella que se mide coincide con alguna de las que existen en el arreglo
-  bool botella_coincide = false;
-
-  //Se realiza una iteración de los contenedores registrados en el arreglo
-  for (struct contenedor botella : botellas)
+  if (digitalRead(SENSOR_ARRANQUE) == HIGH)
   {
-    if (botella.volumen != volumen_botella)
-    {
-      continue; //Si el volumen de la botella no se corresponde con el que fue calculado con ayuda del sensor, revisa la siguiente botella
-    }
+     moverBanda();
+  }
+  int sensores_activos = (sensorSeActivo(SENSOR_ABAJO) + sensorSeActivo(SENSOR_EN_MEDIO) + sensorSeActivo(SENSOR_ARRIBA));
 
-    //Caso contrario, se iguala el contenido del contenedor vacío con el del contenedor que se está revisando y se rompe el ciclo
-
-    botella_seleccionada = botella;
-    botella_coincide = true;
+  switch (sensores_activos)
+  {
+  case CHICO:
+    llenarBotella(TIEMPO_LLENADO_CHICO);
+    moverBanda();
     break;
+  case MEDIANO:
+    llenarBotella(TIEMPO_LLENADO_MEDIANO);
+    moverBanda();
+    break;
+  case GRANDE:
+    llenarBotella(TIEMPO_LLENADO_GRANDE);
+    moverBanda();
+    break;
+   
   }
+ 
+}
 
-  if (botella_coincide)
-  {
-    //Aquí debería de activarse la válvula que se utilizará para llenar el contenedor
+void llenarBotella(int tiempo_de_llenado)
+{
+  delay(1000);
+  digitalWrite(BOMBA_DE_AGUA, HIGH);
+  delay(tiempo_de_llenado);
+  digitalWrite(BOMBA_DE_AGUA, LOW);
+}
 
-    //Espera el tiempo que tarda el contenedor en llenarse
-    delay(botella_seleccionada.tiempo_llenado);
+bool sensorSeActivo(int sensor)
+{
+  return (analogRead(sensor) <= 6);
+}
 
-    //Finalmente imprime el tiempo en el que se llenó el contenedor, aquí debe ir el código que active nuevamente la banda para que esta continue su funcionamiento
-    Serial.print("Botella Llenada en ");
-    Serial.print(botella_seleccionada.tiempo_llenado / 1000);
-    Serial.println("s");
-  }
+void moverBanda() 
+{
+  delay(500);
+  digitalWrite(MOTOR_BANDA, HIGH);
+  delay(10000);
+  digitalWrite(MOTOR_BANDA, LOW);
 }
