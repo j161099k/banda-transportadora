@@ -1,29 +1,25 @@
-#include <Arduino.h>
-
-void entrada(int pin) {
-    pinMode(pin, INPUT);
+void llenarBotella(int tiempo_de_llenado)
+{
+    delay(1000);
+    digitalWrite(BOMBA_DE_AGUA, HIGH);
+    delay(tiempo_de_llenado);
+    digitalWrite(BOMBA_DE_AGUA, LOW);
 }
 
-void salida(int pin) {
-    pinMode(pin, OUTPUT);
+bool sensorSeActivo(int sensor)
+{
+    int lectura_del_sensor = analogRead(sensor);
+
+    Serial.print("Lectura de la fotoresistencia => ");
+    Serial.println(lectura_del_sensor);
+
+    return (lectura_del_sensor <= 6);
 }
 
-bool estaActivo(int pin) {
-    return (digitalRead(pin) == HIGH);
-}
-
-void activar(int pin) {
-    digitalWrite(pin, HIGH);
-}
-
-void desactivar(int pin) {
-    digitalWrite(pin, LOW);
-}
-
-void invertir(int pin) {
-    if(!estaActivo(pin)) {
-        activar(pin);
-    } else {
-        desactivar(pin);
-    }
+void moverBanda(int tiempo_en_movimiento)
+{
+    delay(500);
+    digitalWrite(MOTOR_BANDA, HIGH);
+    delay(tiempo_en_movimiento);
+    digitalWrite(MOTOR_BANDA, LOW);
 }
