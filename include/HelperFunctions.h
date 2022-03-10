@@ -1,6 +1,6 @@
 void llenarBotella(int tiempo_de_llenado)
 {
-    delay(1000);
+    delay(RETARDO_LLENADO_DE_CONTENEDOR);
     digitalWrite(BOMBA_DE_AGUA, HIGH);
     delay(tiempo_de_llenado);
     digitalWrite(BOMBA_DE_AGUA, LOW);
@@ -8,17 +8,12 @@ void llenarBotella(int tiempo_de_llenado)
 
 bool sensorSeActivo(int sensor)
 {
-    int lectura_del_sensor = analogRead(sensor);
-
-    Serial.print("Lectura de la fotoresistencia => ");
-    Serial.println(lectura_del_sensor);
-
-    return (lectura_del_sensor <= 6);
+    return (analogRead(sensor) <= VALOR_MINIMO_FOTORESISTENCIA);
 }
 
 void moverBanda(int tiempo_en_movimiento)
 {
-    delay(500);
+    delay(RETARDO_ARRANQUE_DE_BANDA);
     digitalWrite(MOTOR_BANDA, HIGH);
     delay(tiempo_en_movimiento);
     digitalWrite(MOTOR_BANDA, LOW);

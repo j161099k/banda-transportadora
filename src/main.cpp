@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <Arduino.h>
 
 // ../include/ConstantsDefinition.h
@@ -26,20 +27,21 @@ void loop()
   {
     moverBanda(10000);
 
+    // Se cuenta cuantos sensores se activaron, a traves de una suma
     const int tamano_del_contenedor = ( sensorSeActivo(SENSOR_ABAJO) + sensorSeActivo(SENSOR_EN_MEDIO) + sensorSeActivo(SENSOR_ARRIBA) );
 
     switch (tamano_del_contenedor)
     {
-    case CHICO:
-      llenarBotella(TIEMPO_LLENADO_CHICO);
+    case CONTENEDOR_CHICO: // si el valor de tamano_del_contenedor es 1:
+      llenarBotella(TIEMPO_LLENADO_CONTENEDOR_CHICO);
       break;
 
-    case MEDIANO:
-      llenarBotella(TIEMPO_LLENADO_MEDIANO);
+    case CONTENEDOR_MEDIANO: // si el valor de tamano_del_contenedor es 2:
+      llenarBotella(TIEMPO_LLENADO_CONTENEDOR_MEDIANO);
       break;
 
-    case GRANDE:
-      llenarBotella(TIEMPO_LLENADO_GRANDE);
+    case CONTENEDOR_GRANDE: // si el valor de tamano_del_contenedor es 3:
+      llenarBotella(TIEMPO_LLENADO_CONTENEDOR_GRANDE);
       break;
     }
 
